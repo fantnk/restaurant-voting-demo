@@ -1,6 +1,7 @@
 package top.fedoseev.restaurant.voting.web.user;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = AdminUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Tag(name = "user", description = "the user API")
 public class AdminUserController {
 
     static final String REST_URL = "/api/admin/users";
@@ -63,7 +65,8 @@ public class AdminUserController {
         UserFullResponse created = userService.create(request);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
-                .buildAndExpand(created.id()).toUri();
+                .buildAndExpand(created.id())
+                .toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
