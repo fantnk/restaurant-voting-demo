@@ -6,20 +6,19 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.fedoseev.restaurant.voting.exception.EntityNotFoundException;
 import top.fedoseev.restaurant.voting.exception.ErrorMessage;
+import top.fedoseev.restaurant.voting.exception.NotFoundException;
 import top.fedoseev.restaurant.voting.mapper.RestaurantMapper;
 import top.fedoseev.restaurant.voting.model.Restaurant;
 import top.fedoseev.restaurant.voting.repository.RestaurantRepository;
-import top.fedoseev.restaurant.voting.to.RestaurantCreationRequest;
-import top.fedoseev.restaurant.voting.to.RestaurantResponse;
+import top.fedoseev.restaurant.voting.to.restaurant.RestaurantCreationRequest;
+import top.fedoseev.restaurant.voting.to.restaurant.RestaurantResponse;
 
 import java.util.List;
 
 @Service
 @CacheConfig(cacheNames = RestaurantServiceImpl.CACHE_NAME)
 @RequiredArgsConstructor
-@SuppressWarnings("ClassCanBeRecord")
 public class RestaurantServiceImpl implements RestaurantService {
     static final String CACHE_NAME = "restaurants";
 
@@ -28,10 +27,10 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     @Cacheable
-    public RestaurantResponse getById(Integer id) {
+    public RestaurantResponse getById(int id) {
         return repository.findById(id)
                 .map(restaurantMapper::toRestaurantResponse)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.RESTAURANT_NOT_FOUND, "id", id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Restaurant", id));
     }
 
     @Override
@@ -54,7 +53,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     @Transactional
     @CacheEvict(value = CACHE_NAME, allEntries = true)
-    public void delete(Integer id) {
+    public void delete(int id) {
         repository.deleteExisted(id);
     }
 

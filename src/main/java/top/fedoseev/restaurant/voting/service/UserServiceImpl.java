@@ -12,8 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.fedoseev.restaurant.voting.exception.EntityNotFoundException;
 import top.fedoseev.restaurant.voting.exception.ErrorMessage;
+import top.fedoseev.restaurant.voting.exception.NotFoundException;
 import top.fedoseev.restaurant.voting.mapper.UserMapper;
 import top.fedoseev.restaurant.voting.model.User;
 import top.fedoseev.restaurant.voting.repository.UserRepository;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserAdminService, UserService {
     public UserFullResponse getByEmail(String email) {
         return repository.getByEmail(email)
                 .map(userMapper::toUserFullResponse)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND, "email", email));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND, "email", email));
     }
 
     @Cacheable
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserAdminService, UserService {
 
     private User get(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND, "id", id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND, "id", id));
     }
 
     private AuthUser getAuthenticatedUser() {

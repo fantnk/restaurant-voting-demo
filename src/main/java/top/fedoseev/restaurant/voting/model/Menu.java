@@ -1,7 +1,5 @@
 package top.fedoseev.restaurant.voting.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,13 +35,17 @@ public class Menu extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @JsonBackReference
     private Restaurant restaurant;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "menu")
     @OrderBy("name DESC")
-    @JsonManagedReference
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Dish> dishes;
+
+    public Menu(LocalDate effectiveDate, Restaurant restaurant, List<Dish> dishes) {
+        this.effectiveDate = effectiveDate;
+        this.restaurant = restaurant;
+        this.dishes = dishes;
+    }
 
 }

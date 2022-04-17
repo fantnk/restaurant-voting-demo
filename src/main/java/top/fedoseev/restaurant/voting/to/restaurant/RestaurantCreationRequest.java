@@ -1,4 +1,4 @@
-package top.fedoseev.restaurant.voting.to;
+package top.fedoseev.restaurant.voting.to.restaurant;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import top.fedoseev.restaurant.voting.util.validation.NoHtml;
@@ -6,7 +6,7 @@ import top.fedoseev.restaurant.voting.util.validation.NoHtml;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Schema(description = "New restaurant creation request")
+@Schema(description = "New restaurant creation request", accessMode = Schema.AccessMode.WRITE_ONLY)
 public record RestaurantCreationRequest(
         @NotBlank
         @Size(min = 2, max = 100)

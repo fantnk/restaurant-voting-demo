@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Schema(description = "Response of the user with all fields")
+@Schema(description = "Response of the user with all fields", accessMode = Schema.AccessMode.READ_ONLY)
 public record UserFullResponse(
         @NotNull
         @Schema(description = "ID", example = "1")

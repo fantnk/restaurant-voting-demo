@@ -1,6 +1,5 @@
 package top.fedoseev.restaurant.voting.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,11 @@ public class Dish extends NamedEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false)
-    @JsonBackReference
     private Menu menu;
 
+    public Dish(Integer id, String name, BigDecimal price, Menu menu) {
+        super(id, name);
+        this.price = price;
+        this.menu = menu;
+    }
 }

@@ -1,4 +1,4 @@
-package top.fedoseev.restaurant.voting.web.restaurant;
+package top.fedoseev.restaurant.voting.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import top.fedoseev.restaurant.voting.service.RestaurantService;
-import top.fedoseev.restaurant.voting.to.RestaurantCreationRequest;
-import top.fedoseev.restaurant.voting.to.RestaurantResponse;
+import top.fedoseev.restaurant.voting.to.restaurant.RestaurantCreationRequest;
+import top.fedoseev.restaurant.voting.to.restaurant.RestaurantResponse;
 
 import javax.validation.Valid;
 import java.net.URI;

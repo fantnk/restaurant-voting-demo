@@ -1,6 +1,5 @@
 package top.fedoseev.restaurant.voting.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,14 +26,13 @@ import java.util.List;
 @Schema(description = "Restaurant")
 public class Restaurant extends NamedEntity {
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+    @OrderBy("effectiveDate DESC")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Menu> menus;
+
     public Restaurant(Integer id, String name) {
         super(id, name);
     }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
-    @OrderBy("effectiveDate DESC")
-    @JsonManagedReference
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<Menu> menus;
 
 }

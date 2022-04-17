@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 
-@Schema(description = "User modification request by admin")
+@Schema(description = "User modification request by admin", accessMode = Schema.AccessMode.WRITE_ONLY)
 public record UserModificationByAdminRequest(
         @NotBlank
         @Size(min = 2, max = 100)

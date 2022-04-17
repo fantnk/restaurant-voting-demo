@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Schema(description = "New user creation request")
+@Schema(description = "New user creation request", accessMode = Schema.AccessMode.WRITE_ONLY)
 public record UserCreationRequest(
         @NotBlank
         @Size(min = 2, max = 100)

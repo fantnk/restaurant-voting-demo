@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 
-@Schema(description = "Error response")
+@Schema(description = "Error response", accessMode = Schema.AccessMode.READ_ONLY)
 public record ErrorResponse(
 
         @Schema(description = "Message", example = "Entity with id 0 was not found")

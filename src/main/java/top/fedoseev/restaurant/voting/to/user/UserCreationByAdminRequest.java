@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 
-@Schema(description = "New user creation request by admin")
+@Schema(description = "New user creation request by admin", accessMode = Schema.AccessMode.WRITE_ONLY)
 public record UserCreationByAdminRequest(
         @NotBlank
         @Size(min = 2, max = 100)
