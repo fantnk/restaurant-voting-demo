@@ -19,9 +19,10 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"menu"})
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class Dish extends NamedEntity {
 
+    @ToString.Include
     private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY)

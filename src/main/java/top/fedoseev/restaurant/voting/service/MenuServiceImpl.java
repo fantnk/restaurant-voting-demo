@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.fedoseev.restaurant.voting.exception.ErrorMessage;
 import top.fedoseev.restaurant.voting.exception.NotFoundException;
+import top.fedoseev.restaurant.voting.exception.ValidationException;
 import top.fedoseev.restaurant.voting.mapper.MenuMapper;
 import top.fedoseev.restaurant.voting.model.Menu;
 import top.fedoseev.restaurant.voting.model.Restaurant;
@@ -16,6 +17,7 @@ import top.fedoseev.restaurant.voting.repository.RestaurantRepository;
 import top.fedoseev.restaurant.voting.to.menu.MenuCreationRequest;
 import top.fedoseev.restaurant.voting.to.menu.MenuResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -43,8 +45,15 @@ public class MenuServiceImpl implements MenuService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Restaurant", restaurantId));
         Menu menu = menuMapper.fromCreationRequest(request, restaurant);
+        checkDayHasNotCome(menu.getEffectiveDate());
         Menu savedMenu = menuRepository.save(menu);
         return menuMapper.toMenuResponse(savedMenu);
+    }
+
+    private void checkDayHasNotCome(LocalDate date) {
+        if (!LocalDate.now().isBefore(date)) {
+            throw new ValidationException(ErrorMessage.DAY_HAS_COME, date);
+        }
     }
 
     @Override

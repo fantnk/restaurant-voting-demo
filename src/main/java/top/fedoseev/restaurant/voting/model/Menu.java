@@ -26,11 +26,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"restaurant", "dishes"})
+@ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class Menu extends BaseEntity {
 
     @Column(name = "effective_date", nullable = false)
     @NotNull
+    @ToString.Include
     private LocalDate effectiveDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
