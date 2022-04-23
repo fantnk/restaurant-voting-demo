@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = DishController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = DishController.REST_URL)
 @RequiredArgsConstructor
 @Tag(name = DishController.TAG_NAME, description = "the dish API")
 public class DishController {
@@ -35,7 +35,7 @@ public class DishController {
     private final DishService service;
 
     @Operation(summary = "Get dish by ID")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public DishResponse get(
             @PathVariable @Parameter(description = "ID of the dish that needs to be fetched", required = true, example = "1") int id,
             @PathVariable @Parameter(description = "ID of the menu", required = true, example = "1") int menuId,
@@ -53,7 +53,7 @@ public class DishController {
         service.delete(id, menuId, restaurantId);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all dishes")
     public List<DishResponse> getAll(
             @PathVariable @Parameter(description = "ID of the menu", required = true, example = "1") int menuId,
@@ -61,7 +61,7 @@ public class DishController {
         return service.findAll(menuId, restaurantId);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create dish")
     public ResponseEntity<DishResponse> create(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody

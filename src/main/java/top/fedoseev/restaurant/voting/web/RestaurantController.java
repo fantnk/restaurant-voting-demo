@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = RestaurantController.REST_URL)
 @RequiredArgsConstructor
 @Tag(name = RestaurantController.TAG_NAME, description = "the restaurant API")
 public class RestaurantController {
@@ -35,7 +35,7 @@ public class RestaurantController {
     private final RestaurantService service;
 
     @Operation(summary = "Get restaurant by ID")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public RestaurantResponse get(
             @PathVariable @Parameter(description = "ID of the restaurant that needs to be fetched", required = true, example = "1") int id) {
         return service.getById(id);
@@ -49,13 +49,13 @@ public class RestaurantController {
         service.delete(id);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all restaurants")
     public List<RestaurantResponse> getAll() {
         return service.findAll();
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create restaurant")
     public ResponseEntity<RestaurantResponse> create(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody

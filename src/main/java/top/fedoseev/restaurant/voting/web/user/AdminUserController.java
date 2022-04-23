@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,7 +30,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = AdminUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = AdminUserController.REST_URL)
 @RequiredArgsConstructor
 @Tag(name = "user", description = "the user API")
 public class AdminUserController {
@@ -41,7 +40,7 @@ public class AdminUserController {
     private final UserAdminService userService;
 
     @Operation(summary = "Get user by ID")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserFullResponse get(@PathVariable int id) {
         return userService.getById(id);
     }
@@ -54,13 +53,13 @@ public class AdminUserController {
     }
 
     @Operation(summary = "Get all users")
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserFullResponse> getAll() {
         return userService.findAll();
     }
 
     @Operation(summary = "Create new user")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserFullResponse> createWithLocation(@Valid @RequestBody UserCreationByAdminRequest request) {
         UserFullResponse created = userService.create(request);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -78,7 +77,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "Get user by email")
-    @GetMapping("/by-email")
+    @GetMapping(value = "/by-email", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserFullResponse getByEmail(@RequestParam @Valid @Email String email) {
         return userService.getByEmail(email);
     }
@@ -86,7 +85,6 @@ public class AdminUserController {
     @Operation(summary = "Particle update existed user")
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
     public void particleUpdate(@PathVariable int id, @RequestParam(required = false) Boolean enabled,
                                @RequestParam(required = false) @Size(min = 5, max = 32) String password) {
         userService.particleUpdate(id, enabled, password);

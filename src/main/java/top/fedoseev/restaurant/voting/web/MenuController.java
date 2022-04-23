@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = MenuController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = MenuController.REST_URL)
 @RequiredArgsConstructor
 @Tag(name = MenuController.TAG_NAME, description = "the menu API")
 public class MenuController {
@@ -35,7 +35,7 @@ public class MenuController {
     private final MenuService service;
 
     @Operation(summary = "Get menu by ID")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public MenuResponse get(
             @PathVariable @Parameter(description = "ID of the menu that needs to be fetched", required = true, example = "1") int id,
             @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId) {
@@ -51,14 +51,14 @@ public class MenuController {
         service.delete(id, restaurantId);
     }
 
-    @GetMapping
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all menus")
     public List<MenuResponse> getAll(
             @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId) {
         return service.findAll(restaurantId);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create menu")
     public ResponseEntity<MenuResponse> create(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody

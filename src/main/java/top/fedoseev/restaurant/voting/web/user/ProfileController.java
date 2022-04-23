@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +27,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = ProfileController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = ProfileController.REST_URL)
 @RequiredArgsConstructor
 @Tag(name = "profile", description = "the profile API")
 public class ProfileController {
@@ -37,7 +36,7 @@ public class ProfileController {
     private final UserService userService;
 
     @Operation(summary = "Get profile by ID")
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public UserFullResponse get(@AuthenticationPrincipal AuthUser authUser) {
         return userService.getById(authUser.id());
     }
@@ -50,7 +49,7 @@ public class ProfileController {
     }
 
     @Operation(summary = "Register new profile")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserCreationRequest request) {
         UserResponse response = userService.create(request);
@@ -62,7 +61,6 @@ public class ProfileController {
     @Operation(summary = "Modify existed profile")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
     public void update(@RequestBody @Valid UserModificationRequest request) {
         userService.update(request);
     }
