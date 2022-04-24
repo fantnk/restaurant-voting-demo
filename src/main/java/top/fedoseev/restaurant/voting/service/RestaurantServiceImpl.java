@@ -6,31 +6,34 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.fedoseev.restaurant.voting.exception.ErrorMessage;
-import top.fedoseev.restaurant.voting.exception.NotFoundException;
 import top.fedoseev.restaurant.voting.mapper.RestaurantMapper;
 import top.fedoseev.restaurant.voting.model.Restaurant;
 import top.fedoseev.restaurant.voting.repository.RestaurantRepository;
+import top.fedoseev.restaurant.voting.repository.VoteRepository;
 import top.fedoseev.restaurant.voting.to.restaurant.RestaurantCreationRequest;
 import top.fedoseev.restaurant.voting.to.restaurant.RestaurantResponse;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @CacheConfig(cacheNames = RestaurantServiceImpl.CACHE_NAME)
 @RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
     static final String CACHE_NAME = "restaurants";
+    private static final int TOTAL_VOTES_TODAY_DEFAULT_VALUE = 0;
 
-    private final RestaurantRepository repository;
+    private final RestaurantRepository restaurantRepository;
+    private final VoteRepository voteRepository;
     private final RestaurantMapper restaurantMapper;
 
     @Override
     @Cacheable
+    @Transactional(readOnly = true)
     public RestaurantResponse getById(int id) {
-        return repository.findById(id)
-                .map(restaurantMapper::toRestaurantResponse)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Restaurant", id));
+        Restaurant restaurant = restaurantRepository.getById(id);
+        int votes = voteRepository.countTodayVotesByRestaurantId(id);
+        return restaurantMapper.toRestaurantResponse(restaurant, votes);
     }
 
     @Override
@@ -38,15 +41,16 @@ public class RestaurantServiceImpl implements RestaurantService {
     @CacheEvict(value = CACHE_NAME, allEntries = true)
     public RestaurantResponse create(RestaurantCreationRequest request) {
         Restaurant restaurant = restaurantMapper.fromCreationRequest(request);
-        Restaurant savedRestaurant = repository.save(restaurant);
-        return restaurantMapper.toRestaurantResponse(savedRestaurant);
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        return restaurantMapper.toRestaurantResponse(savedRestaurant, TOTAL_VOTES_TODAY_DEFAULT_VALUE);
     }
 
     @Override
     @Cacheable
     public List<RestaurantResponse> findAll() {
-        return repository.findAll().stream()
-                .map(restaurantMapper::toRestaurantResponse)
+        Map<Integer, Integer> votes = voteRepository.countTodayVotes();
+        return restaurantRepository.findAll().stream()
+                .map(r -> restaurantMapper.toRestaurantResponse(r, votes.getOrDefault(r.getId(), TOTAL_VOTES_TODAY_DEFAULT_VALUE)))
                 .toList();
     }
 
@@ -54,7 +58,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Transactional
     @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void delete(int id) {
-        repository.deleteExisted(id);
+        restaurantRepository.deleteExisted(id);
     }
+
+    //TODO add update method
 
 }

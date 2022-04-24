@@ -17,6 +17,10 @@ public record RestaurantResponse(
         @Size(min = 2, max = 100)
         @NoHtml
         @Schema(description = "Name", example = "Papa Joss")
-        String name
+        String name,
+
+        @NotNull
+        @Schema(description = "Count of today's votes", example = "1")
+        Integer totalVotesToday
 ) {
 }

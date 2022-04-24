@@ -51,7 +51,7 @@ public class MenuController {
         service.delete(id, restaurantId);
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all menus")
     public List<MenuResponse> getAll(
             @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId) {

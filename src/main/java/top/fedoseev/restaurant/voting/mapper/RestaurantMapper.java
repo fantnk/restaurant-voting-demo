@@ -9,7 +9,7 @@ import top.fedoseev.restaurant.voting.to.restaurant.RestaurantResponse;
 @Mapper(config = MapStructConfig.class)
 public interface RestaurantMapper {
 
-    RestaurantResponse toRestaurantResponse(Restaurant restaurant);
+    RestaurantResponse toRestaurantResponse(Restaurant restaurant, Integer totalVotesToday);
 
     Restaurant fromCreationRequest(RestaurantCreationRequest request);
 }
