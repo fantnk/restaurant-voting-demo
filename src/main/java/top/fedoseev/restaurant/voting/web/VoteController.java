@@ -30,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = VoteController.TAG_NAME, description = "the vote API")
 public class VoteController {
-    static final String REST_URL = "/api/profile/vote";
+    static final String REST_URL = "/api/vote";
     static final String TAG_NAME = "vote";
 
     private final UserVotingService service;
