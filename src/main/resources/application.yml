@@ -45,3 +45,6 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+
+app:
+  votingTillTime: "11:00"

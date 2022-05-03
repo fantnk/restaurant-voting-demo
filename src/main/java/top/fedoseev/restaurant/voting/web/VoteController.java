@@ -2,6 +2,7 @@ package top.fedoseev.restaurant.voting.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,17 +60,15 @@ public class VoteController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Vote")
+    @Operation(summary = "Vote", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "201")})
     public ResponseEntity<VoteResponse> vote(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody
-                                                         VoteCreationRequest request,
-                                             @AuthenticationPrincipal AuthUser authUser) {
-        VoteResponse created = service.vote(request, authUser.id());
+                                             VoteCreationRequest request, @AuthenticationPrincipal AuthUser authUser) {
+        VoteResponse vote = service.vote(request, authUser.id());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
-                .buildAndExpand(created.id())
+                .buildAndExpand(vote.id())
                 .toUri();
-        return ResponseEntity.ok().location(uriOfNewResource).body(created);
+        return ResponseEntity.status(vote.created() ? HttpStatus.CREATED : HttpStatus.OK).location(uriOfNewResource).body(vote);
     }
 
 }

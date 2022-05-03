@@ -10,6 +10,9 @@ import top.fedoseev.restaurant.voting.to.vote.VoteResponse;
 public interface VoteMapper {
 
     @Mapping(target = "restaurantId", source = "vote.restaurant.id")
+    VoteResponse toVoteResponse(Vote vote, boolean created);
+
+    @Mapping(target = "restaurantId", source = "vote.restaurant.id")
     VoteResponse toVoteResponse(Vote vote);
 
 }

@@ -1,5 +1,6 @@
 package top.fedoseev.restaurant.voting.to.vote;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotNull;
@@ -17,5 +18,8 @@ public record VoteResponse(
 
         @NotNull
         @Schema(description = "Date", example = "2021-12-31")
-        LocalDate date) {
+        LocalDate date,
+
+        @JsonIgnore
+        boolean created) {
 }
