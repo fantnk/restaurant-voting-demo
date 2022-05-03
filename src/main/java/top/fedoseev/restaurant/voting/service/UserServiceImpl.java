@@ -11,6 +11,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +37,7 @@ import java.util.Optional;
 @Service
 @CacheConfig(cacheNames = UserServiceImpl.CACHE_NAME)
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserAdminService, UserService {
+public class UserServiceImpl implements UserAdminService, UserService, UserDetailsService {
     static final String CACHE_NAME = "users";
 
     private final UserRepository repository;
@@ -132,5 +134,12 @@ public class UserServiceImpl implements UserAdminService, UserService {
                 .filter(AuthUser.class::isInstance)
                 .map(AuthUser.class::cast)
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Could not find original Authentication object"));
+    }
+
+    @Override
+    public AuthUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        return repository.getByEmail(email)
+                .map(AuthUser::new)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND, "email", email));
     }
 }
