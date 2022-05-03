@@ -50,9 +50,10 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     @Cacheable
-    public List<RestaurantResponse> findAll() {
+    public List<RestaurantResponse> findAll(boolean onlyWithMenu) {
         Map<Integer, Integer> votes = voteRepository.countTodayVotes();
-        return restaurantRepository.findAll().stream()
+        List<Restaurant> restaurants = onlyWithMenu ? restaurantRepository.findAllByMenusNotEmptyToday() : restaurantRepository.findAll();
+        return restaurants.stream()
                 .map(r -> restaurantMapper.toRestaurantResponse(r, votes.getOrDefault(r.getId(), TOTAL_VOTES_TODAY_DEFAULT_VALUE)))
                 .toList();
     }

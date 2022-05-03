@@ -11,7 +11,7 @@ public interface RestaurantService {
 
     RestaurantResponse create(RestaurantCreationRequest request);
 
-    List<RestaurantResponse> findAll();
+    List<RestaurantResponse> findAll(boolean onlyWithMenu);
 
     void delete(int id);
 

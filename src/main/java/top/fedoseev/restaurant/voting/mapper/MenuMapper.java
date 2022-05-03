@@ -20,6 +20,5 @@ public interface MenuMapper {
     @Mapping(target = "dishes", ignore = true)
     Menu fromCreationRequest(MenuCreationRequest request, Restaurant restaurant);
 
-//    @Mapping(target = "name")
     void updateFromModificationRequest(@MappingTarget Menu oldMenu, MenuModificationRequest request);
 }

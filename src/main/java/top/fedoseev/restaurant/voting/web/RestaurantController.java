@@ -37,8 +37,8 @@ public class RestaurantController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all restaurants")
-    public List<RestaurantResponse> getAll() {
-        return service.findAll();
+    public List<RestaurantResponse> getAll(boolean onlyWithMenu) {
+        return service.findAll(onlyWithMenu);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
