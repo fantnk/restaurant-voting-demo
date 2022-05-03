@@ -14,6 +14,7 @@ import top.fedoseev.restaurant.voting.model.Menu;
 import top.fedoseev.restaurant.voting.repository.DishRepository;
 import top.fedoseev.restaurant.voting.repository.MenuRepository;
 import top.fedoseev.restaurant.voting.to.dish.DishCreationRequest;
+import top.fedoseev.restaurant.voting.to.dish.DishModificationRequest;
 import top.fedoseev.restaurant.voting.to.dish.DishResponse;
 import top.fedoseev.restaurant.voting.util.validation.ValidationUtil;
 
@@ -32,17 +33,15 @@ public class DishServiceImpl implements DishService {
     @Override
     @Cacheable
     public DishResponse getById(int id, int menuId, int restaurantId) {
-        return dishRepository.findByIdAndMenuIdAndMenuRestaurantId(id, menuId, restaurantId)
-                .map(dishMapper::toDishResponse)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Dish", id));
+        return dishMapper.toDishResponse(getDish(id, menuId, restaurantId));
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    @CacheEvict(allEntries = true)
     public DishResponse create(DishCreationRequest request, int menuId, int restaurantId) {
         Menu menu = menuRepository.findByIdAndRestaurantId(menuId, restaurantId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Menu", menuId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.MENU_NOT_FOUND_BY_ID_AND_RESTAURANT_ID, "Menu", menuId, restaurantId));
         ValidationUtil.checkEquals(menu.getRestaurant().getId(), restaurantId, "Restaurant id");
         Dish dish = dishMapper.fromCreationRequest(request, menu);
         Dish savedDish = dishRepository.save(dish);
@@ -59,8 +58,23 @@ public class DishServiceImpl implements DishService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    @CacheEvict(allEntries = true)
     public void delete(int id, int menuId, int restaurantId) {
         dishRepository.deleteExistedByIdAndMenuIdAndMenuRestaurantId(id, menuId, restaurantId);
+    }
+
+    @Transactional
+    @CacheEvict(allEntries = true)
+    @Override
+    public DishResponse update(DishModificationRequest request, int id, int menuId, int restaurantId) {
+        Dish dish = getDish(id, menuId, restaurantId);
+        dishMapper.updateFromModificationRequest(dish, request);
+        Dish savedDish = dishRepository.save(dish);
+        return dishMapper.toDishResponse(savedDish);
+    }
+
+    private Dish getDish(int id, int menuId, int restaurantId) {
+        return dishRepository.findByIdAndMenuIdAndMenuRestaurantId(id, menuId, restaurantId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.DISH_NOT_FOUND_BY_ID_AND_MENU_ID_AND_RESTAURANT_ID, id, menuId, restaurantId));
     }
 }

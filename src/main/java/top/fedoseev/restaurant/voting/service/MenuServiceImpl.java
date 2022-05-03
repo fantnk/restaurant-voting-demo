@@ -15,6 +15,7 @@ import top.fedoseev.restaurant.voting.model.Restaurant;
 import top.fedoseev.restaurant.voting.repository.MenuRepository;
 import top.fedoseev.restaurant.voting.repository.RestaurantRepository;
 import top.fedoseev.restaurant.voting.to.menu.MenuCreationRequest;
+import top.fedoseev.restaurant.voting.to.menu.MenuModificationRequest;
 import top.fedoseev.restaurant.voting.to.menu.MenuResponse;
 
 import java.time.LocalDate;
@@ -33,14 +34,12 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Cacheable
     public MenuResponse getById(int id, int restaurantId) {
-        return menuRepository.findByIdAndRestaurantId(id, restaurantId)
-                .map(menuMapper::toMenuResponse)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Menu", id));
+        return menuMapper.toMenuResponse(getMenu(id, restaurantId));
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    @CacheEvict(allEntries = true)
     public MenuResponse create(MenuCreationRequest request, int restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Restaurant", restaurantId));
@@ -66,10 +65,23 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    @CacheEvict(allEntries = true)
     public void delete(int id, int restaurantId) {
         menuRepository.deleteExistedByIdAndRestaurantId(id, restaurantId);
     }
 
-    //TODO add update method
+    @Transactional
+    @CacheEvict(allEntries = true)
+    @Override
+    public MenuResponse update(MenuModificationRequest request, int id, int restaurantId) {
+        Menu menu = getMenu(id, restaurantId);
+        menuMapper.updateFromModificationRequest(menu, request);
+        Menu savedMenu = menuRepository.save(menu);
+        return menuMapper.toMenuResponse(savedMenu);
+    }
+
+    private Menu getMenu(int id, int restaurantId) {
+        return menuRepository.findByIdAndRestaurantId(id, restaurantId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.MENU_NOT_FOUND_BY_ID_AND_RESTAURANT_ID, "Menu", id, restaurantId));
+    }
 }

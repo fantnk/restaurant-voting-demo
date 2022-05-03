@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
-@Schema(description = "New dish creation request", accessMode = Schema.AccessMode.WRITE_ONLY)
-public record DishCreationRequest(
+@Schema(description = "Dish modification request", accessMode = Schema.AccessMode.WRITE_ONLY)
+public record DishModificationRequest(
         @NotBlank
         @Size(min = 2, max = 100)
         @NoHtml

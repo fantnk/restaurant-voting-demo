@@ -7,11 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.fedoseev.restaurant.voting.service.DishService;
+import top.fedoseev.restaurant.voting.to.dish.DishModificationRequest;
 import top.fedoseev.restaurant.voting.to.dish.DishResponse;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -39,6 +43,16 @@ public class DishController {
             @PathVariable @Parameter(description = "ID of the menu", required = true, example = "1") int menuId,
             @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId) {
         return service.findAll(menuId, restaurantId);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Modify existed dish")
+    public DishResponse update(
+            @PathVariable @Parameter(description = "ID of the dish that needs to be modified", required = true, example = "1") int id,
+            @PathVariable @Parameter(description = "ID of the menu", required = true, example = "1") int menuId,
+            @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId,
+            @RequestBody @Valid DishModificationRequest request) {
+        return service.update(request, id, menuId, restaurantId);
     }
 
 }

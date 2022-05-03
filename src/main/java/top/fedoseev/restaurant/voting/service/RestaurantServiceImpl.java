@@ -6,11 +6,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.fedoseev.restaurant.voting.exception.ErrorMessage;
+import top.fedoseev.restaurant.voting.exception.NotFoundException;
 import top.fedoseev.restaurant.voting.mapper.RestaurantMapper;
 import top.fedoseev.restaurant.voting.model.Restaurant;
 import top.fedoseev.restaurant.voting.repository.RestaurantRepository;
 import top.fedoseev.restaurant.voting.repository.VoteRepository;
 import top.fedoseev.restaurant.voting.to.restaurant.RestaurantCreationRequest;
+import top.fedoseev.restaurant.voting.to.restaurant.RestaurantModificationRequest;
 import top.fedoseev.restaurant.voting.to.restaurant.RestaurantResponse;
 
 import java.util.List;
@@ -31,14 +34,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Cacheable
     @Transactional(readOnly = true)
     public RestaurantResponse getById(int id) {
-        Restaurant restaurant = restaurantRepository.getById(id);
+        Restaurant restaurant = getRestaurant(id);
         int votes = voteRepository.countTodayVotesByRestaurantId(id);
         return restaurantMapper.toRestaurantResponse(restaurant, votes);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    @CacheEvict(allEntries = true)
     public RestaurantResponse create(RestaurantCreationRequest request) {
         Restaurant restaurant = restaurantMapper.fromCreationRequest(request);
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
@@ -56,11 +59,25 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    @CacheEvict(allEntries = true)
     public void delete(int id) {
         restaurantRepository.deleteExisted(id);
     }
 
-    //TODO add update method
+    @Transactional
+    @CacheEvict(allEntries = true)
+    @Override
+    public RestaurantResponse update(RestaurantModificationRequest request, int id) {
+        Restaurant restaurant = getRestaurant(id);
+        restaurantMapper.updateFromModificationRequest(restaurant, request);
+        Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+        int votes = voteRepository.countTodayVotesByRestaurantId(id);
+        return restaurantMapper.toRestaurantResponse(savedRestaurant, votes);
+    }
+
+    private Restaurant getRestaurant(int id) {
+        return restaurantRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_BY_ID, "Restaurant", id));
+    }
 
 }

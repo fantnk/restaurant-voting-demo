@@ -1,5 +1,6 @@
 package top.fedoseev.restaurant.voting.to.dish;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import top.fedoseev.restaurant.voting.util.validation.NoHtml;
 
@@ -22,5 +23,6 @@ public record DishResponse(
 
         @NotNull
         @Schema(description = "Price", example = "59.99")
+        @JsonFormat(shape= JsonFormat.Shape.STRING)
         BigDecimal price) {
 }

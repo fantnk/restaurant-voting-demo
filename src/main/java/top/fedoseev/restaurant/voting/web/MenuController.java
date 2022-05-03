@@ -7,11 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.fedoseev.restaurant.voting.service.MenuService;
+import top.fedoseev.restaurant.voting.to.menu.MenuModificationRequest;
 import top.fedoseev.restaurant.voting.to.menu.MenuResponse;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -37,6 +41,15 @@ public class MenuController {
     public List<MenuResponse> getAll(
             @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId) {
         return service.findAll(restaurantId);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Modify existed menu")
+    public MenuResponse update(
+            @PathVariable @Parameter(description = "ID of the menu that needs to be modified", required = true, example = "1") int id,
+            @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1") int restaurantId,
+            @RequestBody @Valid MenuModificationRequest request) {
+        return service.update(request, id, restaurantId);
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -128,6 +129,6 @@ public class UserServiceImpl implements UserAdminService, UserService {
                 .map(Authentication::getPrincipal)
                 .filter(AuthUser.class::isInstance)
                 .map(AuthUser.class::cast)
-                .orElseThrow();//todo
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Could not find original Authentication object"));
     }
 }
