@@ -46,8 +46,7 @@ public class AdminDishController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create dish")
-    public ResponseEntity<DishResponse> create(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody
-                                                       DishCreationRequest request,
+    public ResponseEntity<DishResponse> create(@Valid @RequestBody DishCreationRequest request,
                                                @PathVariable @Parameter(description = "ID of the menu", required = true, example = "1") int menuId,
                                                @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1")
                                                        int restaurantId) {

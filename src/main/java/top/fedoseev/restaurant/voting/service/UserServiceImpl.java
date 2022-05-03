@@ -5,7 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -18,15 +19,17 @@ import top.fedoseev.restaurant.voting.exception.NotFoundException;
 import top.fedoseev.restaurant.voting.mapper.UserMapper;
 import top.fedoseev.restaurant.voting.model.User;
 import top.fedoseev.restaurant.voting.repository.UserRepository;
+import top.fedoseev.restaurant.voting.repository.specification.UserSpecification;
 import top.fedoseev.restaurant.voting.to.user.UserCreationByAdminRequest;
 import top.fedoseev.restaurant.voting.to.user.UserCreationRequest;
+import top.fedoseev.restaurant.voting.to.user.UserFilter;
 import top.fedoseev.restaurant.voting.to.user.UserFullResponse;
 import top.fedoseev.restaurant.voting.to.user.UserModificationByAdminRequest;
 import top.fedoseev.restaurant.voting.to.user.UserModificationRequest;
 import top.fedoseev.restaurant.voting.to.user.UserResponse;
+import top.fedoseev.restaurant.voting.util.validation.ValidationUtil;
 import top.fedoseev.restaurant.voting.web.AuthUser;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,10 +52,9 @@ public class UserServiceImpl implements UserAdminService, UserService {
 
     @Cacheable
     @Override
-    public List<UserFullResponse> findAll() {
-        return repository.findAll(Sort.by(Sort.Direction.ASC, "name", "email")).stream()
-                .map(userMapper::toUserFullResponse)
-                .toList();
+    public Page<UserFullResponse> findAll(Pageable pageable, @Nullable UserFilter filter) {
+        ValidationUtil.checkAllowedToSort(pageable.getSort(), User.INDEXED_FIELDS);
+        return repository.findAll(new UserSpecification(filter), pageable).map(userMapper::toUserFullResponse);
     }
 
     @Cacheable

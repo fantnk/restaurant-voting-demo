@@ -49,7 +49,7 @@ public class ClockController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Update time")
-    public ClockResponse update(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody ClockChangingRequest request) {
+    public ClockResponse update(@Valid @RequestBody ClockChangingRequest request) {
         clockSetter.setClock(request.instant());
         return clockMapper.fromInstant(dateTimeProvider.instant());
     }

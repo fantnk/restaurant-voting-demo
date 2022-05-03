@@ -44,8 +44,7 @@ public class AdminMenuController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create menu")
-    public ResponseEntity<MenuResponse> create(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody
-                                                       MenuCreationRequest request,
+    public ResponseEntity<MenuResponse> create(@Valid @RequestBody MenuCreationRequest request,
                                                @PathVariable @Parameter(description = "ID of the restaurant", required = true, example = "1")
                                                        int restaurantId) {
         MenuResponse created = service.create(request, restaurantId);

@@ -61,8 +61,7 @@ public class VoteController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Vote", responses = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "201")})
-    public ResponseEntity<VoteResponse> vote(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody
-                                             VoteCreationRequest request, @AuthenticationPrincipal AuthUser authUser) {
+    public ResponseEntity<VoteResponse> vote(@Valid @RequestBody VoteCreationRequest request, @AuthenticationPrincipal AuthUser authUser) {
         VoteResponse vote = service.vote(request, authUser.id());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")

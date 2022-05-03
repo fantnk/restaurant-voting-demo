@@ -3,6 +3,7 @@ package top.fedoseev.restaurant.voting.web;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedExceptionUtils;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,20 +73,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({
+            VoteIsTooLateException.class,
             NotFoundException.class,
-            EntityNotFoundException.class
+            EntityNotFoundException.class,
+            PropertyReferenceException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    protected ErrorResponse handleNotFoundException(RuntimeException exception) {
-        logException(exception);
-        return new ErrorResponse(exception.getMessage());
-    }
-
-    @ExceptionHandler(VoteIsTooLateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    protected ErrorResponse handleVoteIsTooLateException(VoteIsTooLateException exception) {
+    protected ErrorResponse handleBadRequestExceptions(RuntimeException exception) {
         logException(exception);
         return new ErrorResponse(exception.getMessage());
     }

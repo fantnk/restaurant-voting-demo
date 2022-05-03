@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -29,12 +30,15 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = User_.EMAIL, name = "users_unique_email_id_idx")},
+        indexes = {@Index(name = "users_name_idx", columnList = NamedEntity_.NAME)})
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 public class User extends NamedEntity {
+
+    public static final Set<String> INDEXED_FIELDS = Set.of(BaseEntity_.ID, User_.EMAIL, NamedEntity_.NAME);
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
