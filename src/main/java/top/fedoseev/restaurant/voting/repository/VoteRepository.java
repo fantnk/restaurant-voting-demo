@@ -8,6 +8,7 @@ import top.fedoseev.restaurant.voting.util.validation.ValidationUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 public interface VoteRepository extends BaseRepository<Vote> {
@@ -20,8 +21,13 @@ public interface VoteRepository extends BaseRepository<Vote> {
     @Query("select count(v) from Vote v where v.date = current_date and v.restaurant.id = :restaurantId")
     int countTodayVotesByRestaurantId(int restaurantId);
 
+    default Map<Integer, Integer> countTodayVotes() {
+        return countTodayVotesInternal().stream()
+                .collect(Collectors.toMap(o -> (Integer) o[0], o -> ((Long) o[1]).intValue()));
+    }
+
     @Query("select v.restaurant.id, count(v.id) from Vote v where v.date = current_date group by v.restaurant")
-    Map<Integer, Integer> countTodayVotes();
+    List<Object[]> countTodayVotesInternal();
 
     List<Vote> findAllByUserId(int userId);
 

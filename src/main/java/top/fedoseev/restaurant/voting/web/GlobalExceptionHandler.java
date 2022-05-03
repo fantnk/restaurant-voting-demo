@@ -3,6 +3,7 @@ package top.fedoseev.restaurant.voting.web;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedExceptionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -105,13 +106,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
             javax.validation.ValidationException.class,
-            ValidationException.class,
+            ValidationException.class
     })
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ResponseBody
     protected ErrorResponse handleValidationException(RuntimeException exception) {
         logException(exception);
         return new ErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorResponse conflict(DataIntegrityViolationException exception) {
+        logException(exception);
+        Throwable cause = NestedExceptionUtils.getMostSpecificCause(exception);
+        return new ErrorResponse(cause.getMessage());
     }
 
     private ResponseEntity<Object> createResponseEntity(HttpStatus status, ErrorResponse exception) {
